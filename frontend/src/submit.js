@@ -7,9 +7,10 @@ import { Play, Loader } from 'lucide-react';
 import { useStore } from './store';
 import { shallow } from 'zustand/shallow';
 
-// In production (Vercel) use the serverless function; locally use FastAPI.
+// In production (Vercel multi-service) backend is at the /_/backend routePrefix.
+// Locally the FastAPI dev server runs on port 8000.
 const BACKEND_URL = process.env.NODE_ENV === 'production'
-  ? '/api/pipelines/parse'
+  ? '/_/backend/pipelines/parse'
   : 'http://localhost:8000/pipelines/parse';
 
 const selector = (s) => ({
