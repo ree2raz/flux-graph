@@ -7,7 +7,10 @@ import { Play, Loader } from 'lucide-react';
 import { useStore } from './store';
 import { shallow } from 'zustand/shallow';
 
-const BACKEND_URL = 'http://localhost:8000/pipelines/parse';
+// In production (Vercel) use the serverless function; locally use FastAPI.
+const BACKEND_URL = process.env.NODE_ENV === 'production'
+  ? '/api/pipelines/parse'
+  : 'http://localhost:8000/pipelines/parse';
 
 const selector = (s) => ({
   nodes: s.nodes,
