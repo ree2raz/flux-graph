@@ -34,11 +34,14 @@ export const SubmitButton = () => {
     setLoading(true);
     setError(null);
 
+    // Read fresh state at click time — avoids stale closure from render capture.
+    const { nodes: currentNodes, edges: currentEdges } = useStore.getState();
+
     try {
       const response = await fetch(BACKEND_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodes, edges }),
+        body: JSON.stringify({ nodes: currentNodes, edges: currentEdges }),
       });
 
       if (!response.ok) {
@@ -55,7 +58,7 @@ export const SubmitButton = () => {
     } finally {
       setLoading(false);
     }
-  }, [nodes, edges, setPipelineResult]);
+  }, [setPipelineResult]);
 
   return (
     <div
