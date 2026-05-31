@@ -52,10 +52,16 @@ export function TextNode({ id, data, selected }) {
   const [text, setText] = useState(data?.text ?? '{{input}}');
   const [variables, setVariables] = useState(() => parseVariables(data?.text ?? '{{input}}'));
   const prevVarsRef = useRef(variables);
-  const [manualWidth, setManualWidth] = useState(null);
 
   const removeEdgesForHandle = useStore((s) => s.removeEdgesForHandle);
   const updateNodeField = useStore((s) => s.updateNodeField);
+  const updateNodeStyle = useStore((s) => s.updateNodeStyle);
+
+  // Set initial width once on mount so the ReactFlow wrapper has an explicit size.
+  useEffect(() => {
+    updateNodeStyle(id, { width: computeWidth(text) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── Handle text changes ────────────────────────────────────────────────────
   const handleChange = useCallback(
@@ -63,6 +69,7 @@ export function TextNode({ id, data, selected }) {
       const newText = e.target.value;
       setText(newText);
       updateNodeField(id, 'text', newText);
+      updateNodeStyle(id, { width: computeWidth(newText) });
 
       const newVars = parseVariables(newText);
       const prevVars = prevVarsRef.current;
@@ -92,12 +99,7 @@ export function TextNode({ id, data, selected }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.text]);
 
-  const handleResize = useCallback((_, { width: w }) => setManualWidth(w), []);
-
   // ── Derived geometry ───────────────────────────────────────────────────────
-  // manualWidth is a user-set floor; auto-width still expands on longer lines.
-  const autoWidth = computeWidth(text);
-  const width = manualWidth ? Math.max(manualWidth, autoWidth) : autoWidth;
   const rows = computeRows(text);
 
   // ── Dynamic handles ────────────────────────────────────────────────────────
@@ -120,7 +122,7 @@ export function TextNode({ id, data, selected }) {
         minWidth={MIN_WIDTH}
         maxWidth={MAX_WIDTH}
         minHeight={80}
-        onResize={handleResize}
+        onResizeEnd={(_, { width }) => updateNodeStyle(id, { width })}
         lineStyle={{ borderColor: ACCENT, borderWidth: 1 }}
         handleStyle={{
           width: 8,
@@ -138,7 +140,7 @@ export function TextNode({ id, data, selected }) {
         Icon={Type}
         accentColor={ACCENT}
         handles={handles}
-        style={{ width, minWidth: MIN_WIDTH }}
+        style={{ width: '100%', minWidth: MIN_WIDTH }}
       >
         {/* Custom body — a growing textarea */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

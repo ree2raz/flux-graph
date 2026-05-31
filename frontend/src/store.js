@@ -32,6 +32,14 @@ export const useStore = create(
       // ── Load a template ────────────────────────────────────────────────────
       loadTemplate: ({ nodes, edges, nodeIDs }) =>
         set({ nodes, edges, nodeIDs, pipelineResult: null }),
+
+      // ── Update a node's style (used by TextNode for auto/manual resize) ───
+      updateNodeStyle: (nodeId, style) =>
+        set({
+          nodes: get().nodes.map((n) =>
+            n.id === nodeId ? { ...n, style: { ...(n.style ?? {}), ...style } } : n
+          ),
+        }),
       // ── State ──────────────────────────────────────────────────────────────
       nodes: [],
       edges: [],
