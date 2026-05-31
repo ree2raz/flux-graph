@@ -36,6 +36,8 @@ function DeletableEdge({
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX, sourceY, sourcePosition,
     targetX, targetY, targetPosition,
+    borderRadius: 14,
+    offset: 50,
   });
 
   const isCycle    = data?.isCycle ?? false;
