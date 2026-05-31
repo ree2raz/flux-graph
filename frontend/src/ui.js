@@ -16,6 +16,7 @@ import ReactFlow, {
 import { useStore } from './store';
 import { shallow } from 'zustand/shallow';
 import { nodeTypes, getDefaultData } from './nodes/nodeRegistry';
+import { getCycleEdgeIds } from './lib/graph';
 
 import 'reactflow/dist/style.css';
 
@@ -97,7 +98,6 @@ const selector = (s) => ({
   onEdgesChange: s.onEdgesChange,
   onConnect: s.onConnect,
   setEdges: s.setEdges,
-  getCycleEdgeIds: s.getCycleEdgeIds,
 });
 
 export const PipelineUI = () => {
@@ -113,7 +113,6 @@ export const PipelineUI = () => {
     onEdgesChange,
     onConnect,
     setEdges,
-    getCycleEdgeIds,
   } = useStore(selector, shallow);
 
   // Allow dragging an edge endpoint to a different handle (reconnect).
@@ -124,7 +123,7 @@ export const PipelineUI = () => {
 
   // ── Live cycle highlighting ─────────────────────────────────────────────
   // Memoize the Kahn sweep so it only re-runs when nodes/edges actually change.
-  const cycleEdgeIds = useMemo(() => getCycleEdgeIds(), [nodes, edges, getCycleEdgeIds]);
+  const cycleEdgeIds = useMemo(() => getCycleEdgeIds(nodes, edges), [nodes, edges]);
 
   const styledEdges = useMemo(() =>
     edges.map((e) =>
