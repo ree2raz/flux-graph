@@ -85,7 +85,7 @@ export function TextNode({ id, data, selected }) {
       prevVarsRef.current = newVars;
       setVariables(newVars);
     },
-    [id, updateNodeField, removeEdgesForHandle]
+    [id, updateNodeField, removeEdgesForHandle, updateNodeStyle]
   );
 
   // Sync if data.text changes externally (e.g. hydration from localStorage).
