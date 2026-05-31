@@ -92,7 +92,10 @@ export function FieldRenderer({ id, data, field, updateNodeField }) {
           min={field.min}
           max={field.max}
           step={field.step ?? 1}
-          onChange={(e) => update(parseFloat(e.target.value))}
+          onChange={(e) => {
+            const v = parseFloat(e.target.value);
+            update(isNaN(v) ? (field.default ?? 0) : v);
+          }}
         />
       );
       break;

@@ -75,6 +75,7 @@ def check_is_dag(node_ids: list[str], edges: list[EdgeModel]) -> bool:
     Edges that reference non-existent node IDs are silently ignored
     so a partially-loaded frontend state doesn't crash the endpoint.
     """
+    node_ids = list(dict.fromkeys(node_ids))  # dedupe preserving order
     if not node_ids:
         return True
 
