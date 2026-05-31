@@ -15,7 +15,6 @@ const BACKEND_URL = process.env.NODE_ENV === 'production'
 
 const selector = (s) => ({
   nodes: s.nodes,
-  edges: s.edges,
   getCycleEdgeIds: s.getCycleEdgeIds,
   setPipelineResult: s.setPipelineResult,
 });
@@ -24,7 +23,7 @@ export const SubmitButton = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const { nodes, edges, getCycleEdgeIds, setPipelineResult } = useStore(selector, shallow);
+  const { nodes, getCycleEdgeIds, setPipelineResult } = useStore(selector, shallow);
 
   // Live DAG indicator (client-side, before the request is sent).
   const cycleEdgeIds = getCycleEdgeIds();

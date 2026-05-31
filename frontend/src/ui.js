@@ -124,7 +124,7 @@ export const PipelineUI = () => {
 
   // ── Live cycle highlighting ─────────────────────────────────────────────
   // Memoize the Kahn sweep so it only re-runs when nodes/edges actually change.
-  const cycleEdgeIds = useMemo(() => getCycleEdgeIds(), [nodes, edges]);
+  const cycleEdgeIds = useMemo(() => getCycleEdgeIds(), [nodes, edges, getCycleEdgeIds]);
 
   const styledEdges = useMemo(() =>
     edges.map((e) =>
