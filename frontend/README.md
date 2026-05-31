@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# VectorShift Frontend — Pipeline Builder
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React + [ReactFlow](https://reactflow.dev/) drag-and-drop pipeline editor.
+Bootstrapped with Create React App.
 
-## Available Scripts
+For the full design write-up (node abstraction, text-node logic, backend
+integration), see the [root README](../README.md). This file covers running and
+working on the frontend in isolation.
 
-In the project directory, you can run:
+## Run
 
-### `npm start`
+```bash
+cd frontend
+npm install
+npm start          # http://localhost:3000
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+`npm start` expects the backend on `http://localhost:8000` (see
+[`../backend`](../backend)). The submit button posts the pipeline there; in a
+production build it instead targets the `/_/backend` service route (see
+`src/submit.js`).
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Scripts
 
-### `npm test`
+| Command | What it does |
+|---|---|
+| `npm start` | Dev server with hot reload at :3000 |
+| `npm run build` | Optimised production build into `build/` |
+| `npm test` | CRA / Jest test runner (watch mode) |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Source layout
 
-### `npm run build`
+```
+src/
+  App.js              App shell: header, toolbar, canvas, submit bar, modal
+  store.js            Zustand store (+ persist); node/edge CRUD, cycle detection
+  ui.js               ReactFlow canvas, drop handling, deletable edges
+  toolbar.js          Draggable node palette (derived from the registry)
+  draggableNode.js    A single draggable toolbar chip
+  submit.js           Submit button → POST /pipelines/parse → store result
+  nodes/
+    nodeRegistry.js   Single source of truth: every node type as config
+    BaseNode.js       Shared presentational shell (header, body, handles)
+    FieldRenderer.js  Schema field → controlled input
+    textNode.js       Text node: auto-resize + dynamic {{variable}} handles
+  components/
+    ResultModal.js    Pipeline-analysis result dialog
+  lib/
+    graph.js          Client-side Kahn DAG / cycle-edge detection
+    variables.js      {{ variable }} parsing + handle spacing helpers
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Adding a node type
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Add one object to `NODE_DEFINITIONS` in `src/nodes/nodeRegistry.js`. The
+toolbar chip, ReactFlow `nodeTypes` entry, and default node data are all derived
+automatically — no other files to touch. See the root README for the field and
+handle schema.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Styling
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Styling is done with inline style objects plus a small amount of plain CSS in
+`src/index.css` (ReactFlow overrides, scrollbars, and the `@keyframes` used by
+inline `animation:` styles). Each node carries its own `accentColor`, which
+`BaseNode` uses to tint headers, handle dots, and selection rings. There is no
+CSS framework dependency.

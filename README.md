@@ -1,6 +1,26 @@
 # VectorShift — Frontend Technical Assessment
 
-A production-quality AI pipeline builder built with React + ReactFlow on the frontend and FastAPI on the backend.
+An AI pipeline builder: a drag-and-drop node editor (React + ReactFlow) backed
+by a FastAPI service that validates the graph. Build a pipeline, hit submit, and
+get back the node/edge counts and whether the graph is a DAG.
+
+## Tech stack
+
+- **Frontend:** React 18, ReactFlow 11, Zustand (state + localStorage persist), Lucide icons. Create React App build. Styling via inline styles + plain CSS — no CSS framework.
+- **Backend:** FastAPI + Pydantic v2, served by uvicorn. DAG check via Kahn's topological sort (stdlib only).
+
+## Project structure
+
+```
+.
+├── frontend/      React + ReactFlow app  (see frontend/README.md)
+│   └── src/
+│       ├── nodes/         node registry, BaseNode, FieldRenderer, textNode
+│       ├── components/    ResultModal
+│       └── lib/           client-side DAG + variable parsing
+├── backend/       FastAPI /pipelines/parse service  (see backend/README.md)
+└── vercel.json    multi-service deploy config (frontend + FastAPI backend)
+```
 
 ---
 
@@ -16,16 +36,15 @@ npm start          # http://localhost:3000
 ### Backend
 ```bash
 cd backend
-uv venv && source .venv/bin/activate
-uv pip install -r requirements.txt
-uvicorn main:app --reload   # http://localhost:8000
+uv sync                            # install from pyproject.toml / uv.lock
+uv run uvicorn main:app --reload   # http://localhost:8000
 ```
+(Plain pip alternative in [`backend/README.md`](backend/README.md).)
 
 ### Backend tests
 ```bash
 cd backend
-source .venv/bin/activate
-pytest test_main.py -v      # 14 tests, all green
+uv run pytest test_main.py -v      # 14 tests, all green
 ```
 
 ---
@@ -124,3 +143,19 @@ DAG detection uses **Kahn's topological sort** (O(V + E)) — no external graph 
 - **Polished result modal** — animated card dialog (not `window.alert`) with stat cards for nodes/edges/DAG status plus an explanatory sentence.
 - **Live DAG indicator** — the status bar shows `✓ Valid DAG` / `⚠ Cycle detected` in real time using the same Kahn algorithm run client-side. Cycle-participating edges turn red on the canvas instantly.
 - **localStorage persistence** — Zustand `persist` middleware auto-saves the pipeline so a page refresh doesn't lose work.
+
+---
+
+## Deployment
+
+`vercel.json` deploys both pieces as Vercel multi-service apps
+(`experimentalServices`): the CRA frontend at `/` and the FastAPI backend at
+`/_/backend`. In a production build `src/submit.js` targets
+`/_/backend/pipelines/parse`; in development it targets
+`http://localhost:8000/pipelines/parse`.
+
+> **Note:** `experimentalServices` is a non-standard Vercel feature, so treat
+> the hosted deploy as best-effort. The FastAPI service in `backend/` is the
+> single source of truth for the endpoint — there is no separate serverless
+> copy. Local development (the workflow the assessment specifies) is unaffected:
+> run the frontend on :3000 and the backend on :8000 as shown above.
