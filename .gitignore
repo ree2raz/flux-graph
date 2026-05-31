@@ -16,3 +16,6 @@ backend/*.pyc
 # Editor
 .DS_Store
 .vscode/
+
+# Documents
+*.pdf
