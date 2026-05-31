@@ -154,3 +154,45 @@ def test_unit_cycle():
 
 def test_unit_dag():
     assert check_is_dag(["a", "b", "c"], [_e("a", "b"), _e("b", "c")]) is True
+
+
+# ── Disconnected: one component DAG + one cycle ────────────────────────────────
+
+def test_mixed_component_cycle_not_dag():
+    # a→b is clean; c→d→c is a cycle.
+    data = post(
+        [node("a"), node("b"), node("c"), node("d")],
+        [edge("e1", "a", "b"), edge("e2", "c", "d"), edge("e3", "d", "c")],
+    )
+    assert data["is_dag"] is False
+
+
+# ── Duplicate node IDs ────────────────────────────────────────────────────────
+
+def test_duplicate_node_ids_still_dag():
+    # Sending the same node id twice should not produce a false negative.
+    data = post(
+        [node("a"), node("a"), node("b")],
+        [edge("e1", "a", "b")],
+    )
+    assert data["is_dag"] is True
+
+
+def test_duplicate_node_ids_cycle_not_dag():
+    data = post(
+        [node("a"), node("a"), node("b")],
+        [edge("e1", "a", "b"), edge("e2", "b", "a")],
+    )
+    assert data["is_dag"] is False
+
+
+# ── Empty source / target strings ─────────────────────────────────────────────
+
+def test_empty_source_target_ignored():
+    # Edges with empty-string endpoints that don't match any node id are ignored.
+    data = post(
+        [node("a"), node("b")],
+        [edge("e1", "", "b"), edge("e2", "a", ""), edge("e3", "a", "b")],
+    )
+    assert data["num_edges"] == 3  # all three counted
+    assert data["is_dag"] is True  # only valid edge a→b is evaluated
