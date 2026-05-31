@@ -113,6 +113,27 @@ Beyond the basics:
 
 ---
 
+## Quick bite: how the DAG check works
+
+`is_dag` uses **Kahn's topological sort** (`check_is_dag` in `backend/main.py`,
+mirrored in `src/lib/graph.js`). The principle: a graph is a DAG **iff** you can
+repeatedly remove nodes that have no incoming edges until none are left.
+
+1. Count incoming edges per node (`in_degree`); build an adjacency list.
+2. Queue every node with `in_degree == 0` (no dependencies).
+3. Pop a node, count it, and decrement each neighbor's in-degree — when a
+   neighbor hits 0, queue it.
+4. If you processed **every** node → DAG. If some never reach in-degree 0,
+   they're stuck in a cycle → not a DAG.
+
+Why it works: nodes in a cycle (`A→B→C→A`) always keep an incoming edge from a
+peer, so they never enter the queue. Runs in **O(V + E)**, no recursion, no
+graph library. Edges referencing unknown node ids are ignored so partial state
+can't crash it. The client runs the same sweep to highlight cycle edges live —
+`getCycleEdgeIds` returns the edges whose endpoints are both unprocessed nodes.
+
+---
+
 ## Deployment
 
 `vercel.json` deploys both services (`experimentalServices`): frontend at `/`,
