@@ -78,12 +78,13 @@ export function BaseNode({
     border: `1.5px solid ${selected ? accentColor : '#283452'}`,
     boxShadow: selected
       ? `0 0 0 3px ${accentColor}40, 0 12px 32px -8px ${accentColor}60`
-      : '0 8px 24px -8px rgba(0,0,0,0.65), 0 0 0 1px rgba(20,30,50,0.8)',
+      : `0 0 18px ${accentColor}1a, 0 8px 24px -8px rgba(0,0,0,0.65), 0 0 0 1px rgba(20,30,50,0.8)`,
     fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
     fontSize: 13,
     color: '#e6edf7',
     position: 'relative',
     transition: 'box-shadow 0.18s ease, border-color 0.18s ease',
+    animation: 'node-enter 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
     ...extraStyle,
   };
 

@@ -349,6 +349,11 @@ export const toolbarEntries = NODE_DEFINITIONS.map(({ type, label, Icon, accentC
  * Build the initial `data` object for a newly-dropped node.
  * Populates field defaults so FieldRenderer always has a value to read.
  */
+/** Accent color keyed by node type — consumed by edge gradient renderer. */
+export const nodeAccentColors = Object.fromEntries(
+  NODE_DEFINITIONS.map((d) => [d.type, d.accentColor])
+);
+
 export function getDefaultData(type, id) {
   const def = NODE_DEFINITIONS.find((d) => d.type === type);
   const base = { id, nodeType: type };
