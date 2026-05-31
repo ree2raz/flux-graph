@@ -20,7 +20,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { NodeResizer } from 'reactflow';
 import { Type } from 'lucide-react';
 import { BaseNode } from './BaseNode';
-import { parseVariables, handleTop } from '../lib/variables';
+import { parseVariables } from '../lib/variables';
 import { useStore } from '../store';
 
 // Accent shared with the registry definition.
@@ -52,6 +52,7 @@ export function TextNode({ id, data, selected }) {
   const [text, setText] = useState(data?.text ?? '{{input}}');
   const [variables, setVariables] = useState(() => parseVariables(data?.text ?? '{{input}}'));
   const prevVarsRef = useRef(variables);
+  const [manualWidth, setManualWidth] = useState(null);
 
   const removeEdgesForHandle = useStore((s) => s.removeEdgesForHandle);
   const updateNodeField = useStore((s) => s.updateNodeField);
@@ -91,8 +92,12 @@ export function TextNode({ id, data, selected }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.text]);
 
+  const handleResize = useCallback((_, { width: w }) => setManualWidth(w), []);
+
   // ── Derived geometry ───────────────────────────────────────────────────────
-  const width = computeWidth(text);
+  // manualWidth is a user-set floor; auto-width still expands on longer lines.
+  const autoWidth = computeWidth(text);
+  const width = manualWidth ? Math.max(manualWidth, autoWidth) : autoWidth;
   const rows = computeRows(text);
 
   // ── Dynamic handles ────────────────────────────────────────────────────────
@@ -100,25 +105,9 @@ export function TextNode({ id, data, selected }) {
   const rightHandle = { id: 'output', type: 'source', position: 'right', label: 'Out' };
 
   // Left-side target handles, one per unique variable, evenly spaced.
-  const leftHandles = variables.map((v, i) => ({
-    id: v,
-    type: 'target',
-    position: 'left',
-    label: v,
-    // Override top positioning using handleTop for the full variable list.
-    _topOverride: handleTop(i, variables.length),
-  }));
-
-  // Build the final handles array — we pass _topOverride via a normalised shape.
+  // BaseNode groups handles by position and spaces them automatically.
   const handles = [
-    ...leftHandles.map((h) => ({
-      id: h.id,
-      type: h.type,
-      position: h.position,
-      label: h.label,
-      // BaseNode's positionHandles will group by position and auto-space;
-      // because all left handles belong to one group it naturally spaces them.
-    })),
+    ...variables.map((v) => ({ id: v, type: 'target', position: 'left', label: v })),
     rightHandle,
   ];
 
@@ -131,6 +120,7 @@ export function TextNode({ id, data, selected }) {
         minWidth={MIN_WIDTH}
         maxWidth={MAX_WIDTH}
         minHeight={80}
+        onResize={handleResize}
         lineStyle={{ borderColor: ACCENT, borderWidth: 1 }}
         handleStyle={{
           width: 8,
