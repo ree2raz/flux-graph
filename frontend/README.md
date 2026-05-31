@@ -1,4 +1,4 @@
-# VectorShift Frontend — Pipeline Builder
+# Fluxgraph Frontend — Pipeline Builder
 
 React + [ReactFlow](https://reactflow.dev/) drag-and-drop pipeline editor.
 Bootstrapped with Create React App.

@@ -59,7 +59,7 @@ function App() {
             letterSpacing: '-0.01em',
           }}
         >
-          VectorShift
+          Fluxgraph
         </span>
         <span
           style={{

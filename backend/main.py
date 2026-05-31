@@ -1,5 +1,5 @@
 """
-VectorShift — Pipeline Parse API
+Fluxgraph — Pipeline Parse API
 =================================
 POST /pipelines/parse
   Accepts a serialised ReactFlow pipeline (nodes + edges),
@@ -21,7 +21,7 @@ from pydantic import BaseModel, Field
 # ── App setup ─────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="VectorShift Pipeline API",
+    title="Fluxgraph Pipeline API",
     description="Parse and validate AI pipeline graphs.",
     version="1.0.0",
 )
@@ -106,7 +106,7 @@ def check_is_dag(node_ids: list[str], edges: list[EdgeModel]) -> bool:
 
 @app.get("/", tags=["health"])
 def health_check() -> dict[str, str]:
-    return {"status": "ok", "service": "VectorShift Pipeline API"}
+    return {"status": "ok", "service": "Fluxgraph Pipeline API"}
 
 
 @app.post(

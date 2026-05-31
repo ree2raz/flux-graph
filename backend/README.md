@@ -1,4 +1,4 @@
-# VectorShift Backend — Pipeline Parse API
+# Fluxgraph Backend — Pipeline Parse API
 
 A small FastAPI service that validates serialised ReactFlow pipelines.
 

@@ -106,7 +106,7 @@ export const useStore = create(
       clearPipelineResult: () => set({ pipelineResult: null }),
     }),
     {
-      name: 'vectorshift-pipeline-v1',
+      name: 'fluxgraph-pipeline-v1',
       // Only persist graph data, not transient UI state.
       partialize: (state) => ({
         nodes: state.nodes,
