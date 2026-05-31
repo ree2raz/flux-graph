@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Workflow, Trash2 } from 'lucide-react';
+import { Workflow, Trash2, LayoutTemplate } from 'lucide-react';
 import { PipelineToolbar } from './toolbar';
 import { PipelineUI } from './ui';
 import { SubmitButton } from './submit';
 import { ResultModal } from './components/ResultModal';
+import { TemplateModal } from './components/TemplateModal';
 import { useStore } from './store';
 
 function App() {
   const [confirmClear, setConfirmClear] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const clearPipeline = useStore((s) => s.clearPipeline);
   const nodeCount = useStore((s) => s.nodes.length);
 
@@ -72,6 +74,38 @@ function App() {
         </span>
 
         <div style={{ flex: 1 }} />
+
+        {/* Templates button */}
+        <button
+          onClick={() => setShowTemplates(true)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 5,
+            padding: '5px 11px',
+            background: 'transparent',
+            border: '1px solid #283452',
+            borderRadius: 6,
+            color: '#5b6b8c',
+            fontSize: 11.5,
+            fontWeight: 500,
+            fontFamily: 'Inter, sans-serif',
+            cursor: 'pointer',
+            transition: 'all 0.15s',
+            flexShrink: 0,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = '#6366f1';
+            e.currentTarget.style.color = '#818cf8';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = '#283452';
+            e.currentTarget.style.color = '#5b6b8c';
+          }}
+        >
+          <LayoutTemplate size={12} strokeWidth={2} />
+          Templates
+        </button>
 
         <span
           style={{
@@ -138,6 +172,9 @@ function App() {
 
       {/* ── Result modal (portal-equivalent, renders above everything) ── */}
       <ResultModal />
+
+      {/* ── Template picker ── */}
+      {showTemplates && <TemplateModal onClose={() => setShowTemplates(false)} />}
     </div>
   );
 }

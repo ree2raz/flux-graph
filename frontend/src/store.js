@@ -28,6 +28,10 @@ export const useStore = create(
 
       // ── Clear everything ───────────────────────────────────────────────────
       clearPipeline: () => set({ nodes: [], edges: [], nodeIDs: {}, pipelineResult: null }),
+
+      // ── Load a template ────────────────────────────────────────────────────
+      loadTemplate: ({ nodes, edges, nodeIDs }) =>
+        set({ nodes, edges, nodeIDs, pipelineResult: null }),
       // ── State ──────────────────────────────────────────────────────────────
       nodes: [],
       edges: [],
